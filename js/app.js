@@ -14,7 +14,9 @@ async function getDashboardData(url, destination) {
 
     if(promise.message){
         throw new Error(promise.message);
+        
     }
+
     return {...promise};
 
 }
@@ -30,28 +32,28 @@ async function getDashboardData(url, destination) {
     const promiseFourth = getDashboardData("https://www.meteofittizio.it", "Vienna");
     
 
-    const result = await Promise.all([promiseFirst, promiseSecond, promiseThird]);
+    const result = await Promise.allSettled([promiseFirst, promiseSecond, promiseThird, promiseFourth]);
     console.log('result:', result);
     console.log('result:', {
-        name: result[0][0]?.name ?? null, 
-        country: result[0][0]?.country ?? null, 
-        temperature: result[1][0]?.temperature ?? null, 
-        weather: result[1][0]?.weather_description ?? null, 
-        airport: result[2][0]?.name ?? null
+        name: result[0].value[0]?.name ?? null, 
+        country: result[0].value[0]?.country ?? null, 
+        temperature: result[1].value[0]?.temperature ?? null, 
+        weather: result[1].value[0]?.weather_description ?? null, 
+        airport: result[2].value[0]?.name ?? null
     });
 
     let message = "";
 
-    if(result[0][0]?.name || result[0][0]?.country) {
-        message += `${result[0][0]?.name ?? null} is in ${result[0][0]?.country ?? null}.\n`;
+    if(result[0].value[0]?.name || result[0].value[0]?.country) {
+        message += `${result[0].value[0].name} is in ${result[0].value[0].country}.\n`;
     }
 
-    if(result[1][0]?.temperature || result[1][0]?.weather_description) {
-        message += `Today there are ${result[1][0]?.temperature ?? null} degrees and the weather is ${result[1][0]?.weather_description ?? null}.\n`;
+    if(result[1].value[0]?.temperature || result[1].value[0]?.weather_description) {
+        message += `Today there are ${result[1].value[0].temperature} degrees and the weather is ${result[1].value[0].weather_description}.\n`;
     }
 
-    if(result[2][0]?.name) {
-        message += `The main airport is ${result[2][0]?.name ?? null}.\n`;
+    if(result[2].value[0]?.name) {
+        message += `The main airport is ${result[2].value[0].name}.\n`;
     }
 
     console.log(message);
